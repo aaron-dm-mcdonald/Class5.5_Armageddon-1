@@ -1,126 +1,114 @@
-#############################  NETWORK 1 ############################################################
+#############################  HQ Networks ############################################################
 
-
-
-resource google_compute_network "network_1" {
-    name                    = var.net1
-    description             = "Network channel for Net1 variable"
+resource google_compute_network "hq_vpc" {
+    name                    = var.hq_network_name
+    description             = "headquarters network"
     auto_create_subnetworks = false
     routing_mode            = "REGIONAL"
     mtu                     = 1460
 }
 
-output "n1" {
-    value = google_compute_network.network_1.name
-}
-
-
 #Subnet1
-resource google_compute_subnetwork "network_sub1" {
-    name          = var.net1_sub1
-    description   = "default subnet secure"
-    ip_cidr_range = var.net1_sub1_iprange
-    region        = var.net1_sub1_region
-    network       = google_compute_network.network_1.id
+resource google_compute_subnetwork "hq_subnet" {
+    name          = var.hq_subnet
+    description   = "default subnet for headquarters"
+    ip_cidr_range = var.hq_ip
+    region        = "${substr(var.hq_zone, 0, length(var.hq_zone) - 2)}"
+    network       = google_compute_network.hq_vpc.id
 }
 
-#Subnet2
-resource google_compute_subnetwork "network_sub2" {
-    name          = var.net1_sub2
-    description   = "default subnet2 secure"
-    ip_cidr_range = var.net1_sub2_iprange
-    region        = var.net1_sub2_region
-    network       = google_compute_network.network_1.id
-}
+resource "google_compute_firewall" "allow_http" {
+  
+  network = google_compute_network.hq_vpc.id
 
-##################### Firewall Rules ###########################################################
-#ICMP
-resource "google_compute_firewall" "net1_icmp"{
-    name = "net1-icmp"
-    network = google_compute_network.network_1.id
-    description = "whodoneit?"
-    direction = "INGRESS"
-    priority = 65534
-    source_ranges = ["0.0.0.0/0"]
-    allow {
-        protocol = "icmp"
-    }
-}
-
-#SSH
-resource "google_compute_firewall" "net1_ssh"{
-    name = "net1-ssh"
-    network = google_compute_network.network_1.id
-    description = "whodoneit?"
-    direction = "INGRESS"
-    priority = 65534
-    source_ranges = ["0.0.0.0/0"]
-    allow {
-        protocol = "tcp"
-        ports = ["22"]
-    }
+  name        = "allow-http"
+  description = "Allow inbound traffic on port 80 for americas region to access hq"
+  direction   = "INGRESS"  
+  allow {
+    protocol = "tcp"
+    ports    = ["80"]
+  }
+  source_ranges = ["172.16.32.0/24", "172.16.76.0/24", "${var.asia_ip}"]
 }
 
 
 
-#############################  NETWORK 2 ############################################################
+#############################  Americas Network ############################################################
 
-resource google_compute_network "network_2" {
-    name                    = var.net2
-    description             = "Network channel for Net1 variable"
+resource google_compute_network "americas_vpc" {
+    name                    = var.americas_network_name
+    description             = "VPC for americas branch"
     auto_create_subnetworks = false
     routing_mode            = "REGIONAL"
     mtu                     = 1460
 }
 
-output "n2" {
-    value = google_compute_network.network_2.name
-}
 
 
 #Subnet1
-resource google_compute_subnetwork "network2_sub1" {
-    name          = var.net2_sub1
-    description   = "default subnet secure"
-    ip_cidr_range = var.net2_sub1_iprange
-    region        = var.net2_sub1_region
-    network       = google_compute_network.network_2.id
+resource google_compute_subnetwork "americas_subnet1" {
+    name          = var.americas_subnet1_name
+    description   = "subnetwork for america 1"
+    ip_cidr_range = var.americas_ip1
+    region        = "${substr(var.americas_zone, 0, length(var.americas_zone) - 2)}"
+    network       = google_compute_network.americas_vpc.self_link
 }
 
 #Subnet2
-resource google_compute_subnetwork "network2_sub2" {
-    name          = var.net2_sub2
-    description   = "default subnet2 secure"
-    ip_cidr_range = var.net2_sub2_iprange
-    region        = var.net2_sub2_region
-    network       = google_compute_network.network_2.id
+resource google_compute_subnetwork "americas_subnet2" {
+    name          = var.americas_subnet2_name
+    description   = "subnetwork for america 2"
+    ip_cidr_range = var.americas_ip2
+    region        = var.americas_subnet_2_region
+    network       = google_compute_network.americas_vpc.self_link
 }
 
-####### Firewall Rules ########################################
-#>>>
-#ICMP
-resource "google_compute_firewall" "net2_icmp"{
-    name = "net2-icmp"
-    network = google_compute_network.network_2.id
-    description = "whatforandwhy?"
-    direction = "INGRESS"
-    priority = 65534
-    source_ranges = ["0.0.0.0/0"]
-    allow {
-        protocol = "icmp"
-    }
+
+resource "google_compute_firewall" "allow_rdp_americas" {
+  
+  network = google_compute_network.americas_vpc.self_link
+  name        = "allow-rdp-americas"
+  description = "Allow inbound traffic on port 3389 from other company networks"
+  direction   = "INGRESS"  
+  allow {
+    protocol = "tcp"
+    ports    = ["3389"]
+  }
+  source_ranges = ["0.0.0.0/0"]
 }
 
-#SSH
-resource "google_compute_firewall" "net2_ssh"{
-    name = "net2-ssh"
-    network = google_compute_network.network_2.id
-    description = "whatforandwhy?"
-    direction = "INGRESS"
-    priority = 65534
-    source_ranges = ["0.0.0.0/0"]
-    allow {
-        protocol = "tcp"
-        ports = ["22"]
-    }
+
+
+################ Asia Network #################################################################################
+
+resource google_compute_network "asia_vpc" {
+    name                    = var.asia_vpc_name
+    description             = "headquarters network"
+    auto_create_subnetworks = false
+    routing_mode            = "REGIONAL"
+    mtu                     = 1460
 }
+
+#Subnet1
+resource google_compute_subnetwork "asia_subnet" {
+    name          = var.asia_subnet_name
+    description   = "default subnet for asia"
+    ip_cidr_range = var.asia_ip
+    region        = "${substr(var.asia_zone, 0, length(var.asia_zone) - 2)}"
+    network       = google_compute_network.asia_vpc.self_link
+}
+
+resource "google_compute_firewall" "allow_rdp_asia" {
+  
+  network = google_compute_network.asia_vpc.id
+
+  name        = "allow-rdp-asia"
+  description = "Allow inbound traffic on port 3389 from other company networks"
+  direction   = "INGRESS"  
+  allow {
+    protocol = "tcp"
+    ports    = ["3389"]
+  }
+  source_ranges = ["0.0.0.0/0"]
+}
+

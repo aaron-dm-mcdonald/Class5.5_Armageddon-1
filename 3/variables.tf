@@ -1,76 +1,112 @@
-#Network 1
-variable "net1" {
+################### HQ ################################################################
+// VM vars
+variable "hq_instance_name" {
+  type = string
+  default = "hq-server"
+}
+
+variable "hq_zone" {
+  type = string
+  //Warsaw
+  default = "europe-central2-a"
+}
+
+//Net Vars
+variable "hq_network_name" {
 type = string
-default = "griffin-school-keep"
+default = "headquarters-vpc"
 }
-#>>>
+
 #Subnet 1
-variable "net1_sub1" {
+variable "hq_subnet" {
     type = string
-    default = "kaer-seren-main"
+    default = "subnet1"
 }
 
-variable "net1_sub1_iprange" {
+variable "hq_ip" {
     type = string
-    default = "10.132.32.0/24"
+    default = "10.187.1.0/24"
 }
 
-variable "net1_sub1_region" {
-    type = string
-    default = "europe-north1"
-}
-#>>>
-#Subnet 2
-variable "net1_sub2" {
-    type = string
-    default = "kaer-seren-outpost"
+
+######################  Asia ###############################################################
+//VM vars
+variable "asia_instance_name" {
+  type = string
+  default = "asia-vm"
 }
 
-variable "net1_sub2_iprange" {
-    type = string
-    default = "10.132.76.0/24"
+variable "asia_zone" {
+  type = string
+  //Tokyo
+  default = "asia-northeast1-b"
 }
 
-variable "net1_sub2_region" {
-    type = string
-    default = "europe-west9"
-}
-#>>>
-
-#Network 2
-variable "net2" {
+//Net Vars
+variable "asia_vpc_name" {
 type = string
-default = "griffin-school-pacific"
+default = "asia-vpc"
 }
-#>>>
+
 #Subnet 1
-variable "net2_sub1" {
+variable "asia_subnet_name" {
     type = string
-    default = "kaer-seren-california"
+    default = "subnet1"
 }
 
-variable "net2_sub1_iprange" {
+variable "asia_ip" {
     type = string
-    default = "192.168.32.0/24"
+    default = "192.168.1.0/24"
 }
 
-variable "net2_sub1_region" {
-    type = string
-    default = "us-west2"
-}
-#>>>
-#Subnet 2
-variable "net2_sub2" {
-    type = string
-    default = "kaer-seren-hunting-grounds"
+
+
+#################### Americas ##########################################################33
+//VM Vars
+variable "americas_instance_name" {
+  type = string
+  default = "american-instance1"
 }
 
-variable "net2_sub2_iprange" {
-    type = string
-    default = "192.168.76.0/24"
+variable "americas_instance_name2" {
+  type = string
+  default = "american-instance2"
 }
 
-variable "net2_sub2_region" {
+variable "americas_zone" {
+  type = string
+  default = "us-central1-a"
+}
+
+//Network Vars
+variable "americas_network_name" {
+type = string
+default = "americas-vpc"
+}
+
+//Subnet1
+variable "americas_subnet1_name" {
     type = string
-    default = "asia-northeast1"
+    default = "americas-subnet1"
+}
+
+variable "americas_ip1" {
+    type = string
+    default = "172.16.32.0/24"
+}
+
+//Subnet 2 (SPECIAL)
+variable "americas_subnet2_name" {
+    type = string
+    default = "americas-subnet2"
+}
+
+variable "americas_ip2" {
+    type = string
+    default = "172.16.76.0/24"
+}
+
+variable "americas_subnet_2_region" {
+    type = string
+    default = "us-central1"
 }

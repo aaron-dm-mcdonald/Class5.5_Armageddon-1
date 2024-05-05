@@ -1,10 +1,7 @@
-
-
-
 variable "network_name" {
   description = "The name of the VPC network"
   type        = string
-  default     = "my-vpc-network"
+  default     = "vpc-network"
 }
 
 variable "subnet_name" {
@@ -18,12 +15,6 @@ variable "zone" {
   type        = string
   default     = "us-central1-a"
 }
-
-
-
-
-
-
 
 
 
